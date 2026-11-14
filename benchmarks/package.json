@@ -1,0 +1,25 @@
+{
+  "name": "ai-chat-render-cost-bench",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "bench": "node run-bench.mjs"
+  },
+  "devDependencies": {
+    "@ai-markdown/react": "^3.5.1",
+    "@incremark/react": "^1.0.2",
+    "@streamdown/code": "latest",
+    "@streamdown/math": "latest",
+    "esbuild": "^0.25.0",
+    "katex": "^0.16.22",
+    "playwright": "^1.59.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1",
+    "stream-md": "^0.2.0",
+    "streamdown": "^2.7.1"
+  }
+}

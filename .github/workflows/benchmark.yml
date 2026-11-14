@@ -1,0 +1,122 @@
+name: Benchmark
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "benchmarks/src/**"
+      - "benchmarks/package.json"
+      - "benchmarks/build.mjs"
+      - "benchmarks/run-bench.mjs"
+      - "benchmarks/index.html"
+      - ".github/workflows/benchmark.yml"
+  schedule:
+    - cron: "0 20 * * *"
+  workflow_dispatch:
+    inputs:
+      update_dependencies:
+        description: "Update npm dependencies before running benchmark"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: benchmark-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install dependencies and check lockfile changes
+        id: deps
+        working-directory: benchmarks
+        run: |
+          if [ "${{ github.event_name }}" = "schedule" ] || [ "${{ inputs.update_dependencies }}" = "true" ]; then
+            npm install --no-audit --no-fund
+            npm update --no-audit --no-fund
+          elif [ -f package-lock.json ]; then
+            npm ci --no-audit --no-fund
+          else
+            npm install --no-audit --no-fund
+          fi
+          if [ -n "$(git status --porcelain package-lock.json)" ]; then
+            echo "lock_changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "lock_changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Decide whether to run benchmark
+        id: gate
+        run: |
+          if [ "${{ github.event_name }}" != "schedule" ] || [ "${{ steps.deps.outputs.lock_changed }}" = "true" ]; then
+            echo "should_run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "should_run=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install Playwright Chromium headless shell
+        if: steps.gate.outputs.should_run == 'true'
+        working-directory: benchmarks
+        run: npx playwright install chromium --only-shell --with-deps
+
+      - name: Build bundles
+        if: steps.gate.outputs.should_run == 'true'
+        working-directory: benchmarks
+        run: npm run build
+
+      - name: Run Playwright benchmarks (CPU 4x & 1x)
+        if: steps.gate.outputs.should_run == 'true'
+        working-directory: benchmarks
+        run: npm run bench -- --cpu=4,1 --runs=3 --turns=40
+
+      - name: Write job summary
+        if: steps.gate.outputs.should_run == 'true'
+        run: cat benchmarks/results/latest.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Commit results and lockfile if changed
+        if: steps.gate.outputs.should_run == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add benchmarks/package-lock.json benchmarks/results/latest.md benchmarks/results/latest.json
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git commit -m "chore(bench): update automated benchmark results [skip ci]"
+          git pull --rebase origin main
+          git push
+
+      - name: Report summary to tracking issue
+        if: steps.gate.outputs.should_run == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TITLE="Automated Benchmark Results"
+          ISSUE_NUM=$(gh issue list --state open --search "\"$TITLE\" in:title" --json number,title --jq ".[] | select(.title == \"$TITLE\") | .number" | head -n 1)
+          BODY_FILE=$(mktemp)
+          {
+            echo "Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} (${{ github.event_name }})"
+            echo ""
+            cat benchmarks/results/latest.md
+          } > "$BODY_FILE"
+          if [ -z "$ISSUE_NUM" ]; then
+            gh issue create --title "$TITLE" --body-file "$BODY_FILE"
+          else
+            gh issue comment "$ISSUE_NUM" --body-file "$BODY_FILE"
+          fi
