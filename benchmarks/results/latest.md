@@ -5,7 +5,7 @@ Headless Chromium (mobile viewport `390x844`, software rendering) 上で、同�
 ## Environment & Versions
 
 - Node.js: `v22.23.4`
-- OS / CPU: `linux 7.0.0-1019-azure (x64)` (4 vCPU, INTEL(R) XEON(R) PLATINUM 8573C)
+- OS / CPU: `linux 7.0.0-1019-azure (x64)` (4 vCPU, AMD EPYC 7763 64-Core Processor)
 - Chromium: `159.0.8154.6`
 - Conversation History: 40 turns (80 messages)
 - Streaming Payload: 2000 chars (134 chunks, 20ms interval)
@@ -30,27 +30,27 @@ Headless Chromium (mobile viewport `390x844`, software rendering) 上で、同�
 
 | Mode | Bundle (gzip) | Live DOM Elements | Heap (MB) | DOM Commits | Stream Task (ms) | Layout+Style (ms) | Dropped Frames (>25ms) | LoAF Count | Scroll Task (ms) |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| react-markdown | 120.5 KB | 937 | 12.32 | 135 | 1940.4 | 299.3 | 0 | 1 | 277.7 |
-| streamdown | 1939.6 KB | 5,742 | 35.07 | 135 | 3901.0 | 339.5 | 7 | 6 | 693.9 |
-| ai-markdown | 377 KB | 3,880 | 13.03 | 135 | 2831.9 | 294.8 | 1 | 2 | 572.6 |
-| stream-md | 81.4 KB | 3,069 | 8.38 | 135 | 1387.9 | 250.5 | 0 | 1 | 392.7 |
-| incremark | 2709.4 KB | 8,276 | 30.97 | 135 | 19737.3 | 485.0 | 8 | 9 | 732.4 |
-| react-plain | 71.3 KB | 134 | 2.88 | 135 | 1150.0 | 569.2 | 0 | 0 | 168.9 |
-| react-eco | 71.3 KB | 134 | 2.93 | 9 | 188.8 | 92.3 | 0 | 1 | 163.0 |
-| vanilla-eco | 3.5 KB | 134 | 1.83 | 9 | 168.5 | 35.7 | 0 | 1 | 153.1 |
+| react-markdown | 120.5 KB | 937 | 13.30 | 135 | 1691.3 | 246.7 | 0 | 1 | 260.5 |
+| streamdown | 1940.1 KB | 5,742 | 29.03 | 135 | 4174.8 | 324.2 | 7 | 7 | 705.3 |
+| ai-markdown | 377 KB | 3,880 | 13.48 | 135 | 2683.3 | 260.2 | 1 | 2 | 577.4 |
+| stream-md | 81.4 KB | 3,069 | 8.44 | 135 | 1230.8 | 210.6 | 0 | 1 | 374.7 |
+| incremark | 2709.4 KB | 8,276 | 30.91 | 135 | 19139.9 | 504.2 | 9 | 9 | 685.6 |
+| react-plain | 71.3 KB | 134 | 2.87 | 135 | 1039.7 | 561.7 | 0 | 1 | 126.0 |
+| react-eco | 71.3 KB | 134 | 2.93 | 9 | 190.0 | 94.9 | 0 | 0 | 141.4 |
+| vanilla-eco | 3.5 KB | 134 | 1.83 | 9 | 161.8 | 34.0 | 0 | 1 | 118.4 |
 
 ## CPU 1x (No Throttling)
 
 | Mode | Bundle (gzip) | Live DOM Elements | Heap (MB) | DOM Commits | Stream Task (ms) | Layout+Style (ms) | Dropped Frames (>25ms) | LoAF Count | Scroll Task (ms) |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| react-markdown | 120.5 KB | 937 | 12.31 | 135 | 428.7 | 69.6 | 0 | 0 | 70.2 |
-| streamdown | 1939.6 KB | 5,742 | 34.68 | 135 | 1002.8 | 103.0 | 1 | 2 | 176.7 |
-| ai-markdown | 377 KB | 3,880 | 16.08 | 135 | 692.1 | 77.0 | 0 | 1 | 144.2 |
-| stream-md | 81.4 KB | 3,069 | 8.44 | 135 | 351.0 | 71.4 | 0 | 0 | 99.2 |
-| incremark | 2709.4 KB | 8,276 | 32.21 | 135 | 4619.4 | 96.9 | 2 | 2 | 187.0 |
-| react-plain | 71.3 KB | 134 | 2.87 | 135 | 298.1 | 143.5 | 0 | 0 | 46.6 |
-| react-eco | 71.3 KB | 134 | 2.92 | 9 | 61.1 | 25.8 | 0 | 0 | 46.7 |
-| vanilla-eco | 3.5 KB | 134 | 1.82 | 9 | 53.4 | 8.9 | 0 | 0 | 42.7 |
+| react-markdown | 120.5 KB | 937 | 12.32 | 135 | 440.9 | 64.7 | 0 | 0 | 72.4 |
+| streamdown | 1940.1 KB | 5,742 | 34.70 | 135 | 1058.9 | 96.7 | 1 | 2 | 179.4 |
+| ai-markdown | 377 KB | 3,880 | 16.25 | 135 | 632.1 | 66.6 | 0 | 1 | 133.1 |
+| stream-md | 81.4 KB | 3,069 | 8.43 | 135 | 318.4 | 62.3 | 0 | 0 | 99.0 |
+| incremark | 2709.4 KB | 8,276 | 32.20 | 135 | 4290.9 | 92.4 | 2 | 3 | 197.9 |
+| react-plain | 71.3 KB | 134 | 2.87 | 135 | 271.9 | 141.0 | 0 | 0 | 35.3 |
+| react-eco | 71.3 KB | 134 | 2.92 | 9 | 55.6 | 24.7 | 0 | 0 | 36.9 |
+| vanilla-eco | 3.5 KB | 134 | 1.83 | 9 | 51.5 | 8.8 | 0 | 0 | 34.4 |
 
 ## Notes on Fairness
 
